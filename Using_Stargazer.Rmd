@@ -2,8 +2,6 @@
 Title: Using stargazer package for basic econometric analysis
 Data: IPUMS USA ACS: https://usa.ipums.org/usa/acs_healthins.shtml#:~:text=Health%20Insurance%20Variables%20in%20the%20American%20Community%20Survey,%20%20QHINSCAR%20%203%20more%20rows%20
 
-
-
 ```{r}
 #Necessary Packages
 library(tidyverse)
@@ -15,32 +13,19 @@ library(readr)
 ```{r}
 #Read in Data
 df <- read_csv("C:/Users/bradm/OneDrive/School/GR/WQ20/ECON/LDA/psam_p53.csv")
-View(df)
 ```
 
 
 ```{r}
 ###                       Data Cleaning                        ###
-#initial cleaning - no NA income, no NA commute time, income > $0
-df_clean <- filter(df, !is.na(df$PERNP) & !is.na(df$JWMNP) & df$PERNP >0)
-```
-
-```{r}
-#removing unwanted populations
-df_clean <- subset(df, df$PINCP > 0 & df$AGEP < 65 & !is.na(df$JWMNP))
-#keeping only columns used in our model
-keeps <- c("PINCP", "JWMNP", "AGEP", "RAC1P", "SEX", "SCHL", "ENG", "COW", "WKHP")
+df_clean <- filter(df, !is.na(df$PERNP) & !is.na(df$JWMNP) & df$PERNP >0) #initial cleaning - no NA income, no NA commute time, income > $0
+df_clean <- subset(df, df$PINCP > 0 & df$AGEP < 65 & !is.na(df$JWMNP)) #removing unwanted populations
+keeps <- c("PINCP", "JWMNP", "AGEP", "RAC1P", "SEX", "SCHL", "ENG", "COW", "WKHP") #keeping only columns used in our model
 df_clean_small <- df_clean[keeps]
-```
-
-```{r}
 df_clean_small[is.na(df_clean_small)] <- 1
+colSums(is.na(df_clean_small)) #check to make sure no NA values remain
 ```
 
-```{r}
-#check to make sure no NA values remain
-colSums(is.na(df_clean_small))
-```
 
 ```{r}
 ####        Attach Data       ####
@@ -91,8 +76,6 @@ df3 <- data.frame(Female,Public,NotForProfit,JWMNP,AGEP,Nonwhite,HSgrad,BAdegree
 summary(df3)
 ```
 
-
-
 ```{r}
 #########                   Graphs                    #############
 income <- df_clean_small$PINCP 
@@ -126,7 +109,7 @@ abline(model.fit3, col = "red")
 ```
 
 ```{r}
-####        Models for Question 1           ####
+####        Models for Question         ####
 #OLS for Question 1
 Model_1 <- lm(log(PINCP) ~ Female + Public  + NotForProfit + JWMNP + AGEP + Nonwhite + HSgrad + BAdegree + AdvanceDegree + ENGnonProficient + WKHP)
 Model_2 <- lm(log(PINCP) ~ Female*Public + Female*NotForProfit + Female* + NotForProfit + JWMNP + AGEP + Nonwhite + HSgrad + BAdegree + AdvanceDegree + ENGnonProficient + WKHP) #With Interactive
